@@ -94,4 +94,4 @@ The core idea is to create standardized packages that can be used for data excha
 
 ## Problemssss
 
-- You can report a problem [here](https://github.com/octo-org/octo-repo/issues/1)
+- You can report a problem [here](https://github.com/777Chara777/NetWorkManager/issues/1)
