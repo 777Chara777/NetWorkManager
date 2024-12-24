@@ -7,12 +7,12 @@ class CustomCompression(ABC):
     @abstractmethod
     def compress(self, data: bytes) -> bytes:
         """
-        Метод для сжатия данных.
+        A method for compressing data.
         """
 
     @staticmethod
     @abstractmethod
     def decompress(self, data: bytes) -> bytes:
         """
-        Метод для распаковки данных.
+        Method for decompressing data.
         """

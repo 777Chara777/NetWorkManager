@@ -1,126 +1,97 @@
-### README
+# README
 
-# Manager: Инструмент для работы с сетью
+## Manager: Network Tool
 
-## Описание
+### Description
 
-**Manager** — это мощный инструмент, предназначенный для работы с сетевыми взаимодействиями. Он предоставляет разработчикам средства для создания как серверов, так и клиентов с использованием единого подхода на основе пакетов. **Manager** не является готовым сервером или клиентом, а служит гибкой базой для их разработки.
+**Manager** is a powerful tool designed for network interactions. It provides developers with the means to create both servers and clients using a unified package-based approach. **Manager** is not a ready-made server or client itself but serves as a flexible foundation for their development.
 
-Основная идея заключается в создании стандартизированных пакетов, которые могут быть использованы для обмена данными между клиентами и серверами, а также в обработке событий.
-
----
-
-## Основные возможности
-
-1. **Регистрация пакетов**  
-   Manager позволяет регистрировать пакеты и связанные с ними события, которые будут обрабатываться в процессе взаимодействия.
-
-2. **Поддержка RSA**  
-   Шифрование трафика осуществляется с помощью RSA, что обеспечивает безопасность передаваемых данных.
-
-3. **Модульная архитектура**  
-   - Система позволяет добавлять и обрабатывать пользовательские пакеты.  
-   - Удобный инструмент для разделения задач между обработчиками событий и пакетами.
-
-4. **Гибкость и масштабируемость**  
-   Manager предоставляет базовые классы и методы, которые можно адаптировать для создания приложений любого масштаба.
+The core idea is to create standardized packages that can be used for data exchange between clients and servers, as well as handling events.
 
 ---
 
-## Пример использования
+## Download
 
-### Создание сервера
+1. Clone the repository:
 
-```python
-from Manager import IServer, Logger, RegisterPacket, ListeningEvents
-from Packets.HandShakePacket import HandShakePacket
-from Server.events.HandShakeEvent import HandShakeEvent
+    ```sh
+    git clone https://github.com/777Chara777/NetWorkManager.git
+    ```
 
-class Server:
-    def __init__(self) -> None:
-        self.logger = Logger("Server")
-        self.server = IServer("127.0.0.1", 25565)
+2. Go to the project directory:
 
-        RegisterPacket().register(
-            (HandShakePacket, HandShakeEvent)
-        )
+    ```sh
+    cd Manager
+    ```
 
-        self.server.set_handle_accept(self.handle_accept)
+3. Install the required dependencies:
 
-    async def handle_accept(self):
-        while True:
-            user = await self.server.client_accept()
-            self.logger.info(f"New connection: {user.address}")
-
-            self.server.create_task(self.handle_client(user))
-
-    async def handle_client(self, user):
-        while True:
-            data = await self.server.recv(user.connection, 1024)
-            if not data:
-                self.logger.info(f"User disconnected: {user.address}")
-                break
-
-            packet = parse_packet(data.decode())
-            if packet.packet.getId() in ListeningEvents().get_events():
-                await ListeningEvents.call_event(self, packet.packet.getId(), packet, user)
-
-    def run(self):
-        self.server.bind()
-        self.logger.info("Server started...")
-```
+    ```sh
+    pip install -r requirements.txt 
+    ```
 
 ---
 
-## Основные модули
+## Key Features
+
+1. **Packet Registration**  
+    Manager allows for the registration of packages and the events associated with them, which are processed during interaction.
+
+2. **RSA Support**  
+    Traffic encryption is performed using RSA, ensuring the security of transmitted data.
+
+3. **Modular Architecture**  
+    - The system allows for adding and processing custom packages.  
+    - Convenient tool for separating tasks between event handlers and packages.
+
+4. **Flexibility and Scalability**  
+    Manager provides base classes and methods that can be adapted for applications of any scale.
+
+---
+
+## Example Usage
+
+- [ ] Creating a [**Server**](./doc/Test_Server.md)
+
+- [ ] Creating a [**Client**](./doc/Test_Client.md)
+
+- [X] Creating a [**Packet**](./doc/packets_settings/Creating_Packet.md)
+
+- [ ] Register a [**Packet**](./doc/packets_settings/Registering_Packet.md)
+
+- [ ] Creating a [**Compression methode**](./doc/packets_settings/Compression_Packet.md)
+
+- See all [**./examples/**](./doc/)
+
+---
+
+## Main Modules
 
 - **RegisterPacket**  
-  Регистрация пользовательских пакетов и событий.
+  Registering custom packets and associated events.
 
 - **ListeningEvents**  
-  Обработка событий, связанных с пакетами.
+  Handling events related to packages.
 
 - **CustomPacket**  
-  Базовый класс для создания собственных пакетов.
+  Base class for creating custom packets.
 
 - **RSA**  
-  Утилита для шифрования данных.
+  Utility for encrypting data.
 
 - **Logger**  
-  Удобная система логирования для отслеживания работы сервера и клиента.
+  Convenient logging system for tracking server and client activity. See [examples](./doc/Logger.md)
 
 ---
 
-## Пример регистрации пакета
+## Extensibility
 
-```python
-from Manager.network.utils.Packet.CustomPacket import CustomPacket
-from Manager.network.utils.Packet.PacketCodec import PacketCodec
+- Easily add your own packet types.  
+- Simple integration of custom event handlers.  
+- Ability to scale the server and client for specific needs.
 
-class HandShakePacket(CustomPacket):
-    def __init__(self, openkey: tuple[int, int], salt: bytes) -> None:
-        self.openkey = openkey
-        self.salt = salt
+**Manager** provides the foundational functionality needed to create complex network solutions. With its modularity and security, this tool is an excellent choice for developing servers and clients.
 
-    @staticmethod
-    def getId() -> str:
-        return "HandShakePacket"
+## Problemssss
 
-    @staticmethod
-    def getCodec() -> PacketCodec:
-        return PacketCodec(
-            HandShakePacket, 
-            (PacketCodecs.Tuple(PacketCodecs.Integer, PacketCodecs.Integer128), lambda x: x.openkey),
-            (PacketCodecs.Bytes, lambda x: x.salt)
-        )
-```
-
----
-
-## Возможности расширения
-
-- Легко добавить свои типы пакетов.
-- Простое подключение собственных обработчиков событий.
-- Возможность масштабировать сервер и клиент под конкретные задачи.
-
-**Manager** предоставляет базовый функционал, который можно использовать для создания сложных сетевых решений. Благодаря модульности и безопасности, этот инструмент станет отличным выбором для разработки серверов и клиентов.
+- You can report a problem [here](https://github.com/octo-org/octo-repo/issues/1)

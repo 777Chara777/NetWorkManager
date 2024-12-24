@@ -7,9 +7,9 @@ class Codec(ABC):
     @staticmethod
     @abstractmethod
     def encode(value: str) -> bytes:
-        """Метод для сериализации значения"""
+        """Method for serializing a value"""
 
     @staticmethod
     @abstractmethod
     def decode(buffer: bytes, offset: int) -> Any:
-        """Метод для десериализации значения"""
+        """Method for deserializing a value"""
