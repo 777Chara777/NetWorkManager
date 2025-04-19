@@ -20,6 +20,7 @@ from Manager.network.utils.exceptions.PacketCreationError      import PacketCrea
 
 from Manager.network.typings.TypeVars import *
 
+import struct
 import math
 
 __all__ = (
@@ -36,6 +37,7 @@ __all__ = (
     "format_packet",
     "parse_packet",
     "splitting_package",
+    "collect_packages",
 )
 
 def format_packet(packet: CustomPacket, content: bytes) -> str:
@@ -50,6 +52,9 @@ def format_packet(packet: CustomPacket, content: bytes) -> str:
     Returns:
         str: A formatted string containing the packet ID, the content, and its byte-length.
     """
+    
+    # struct.pack(f"!II{len (packet.getCompression().compress( content ) )}s{len(content)}s")
+
     return f"{packet.getId()},{packet.getCompression().compress( content )},{len(content)}"
 
 def parse_packet(context: str) -> Packet:
@@ -69,7 +74,6 @@ def parse_packet(context: str) -> Packet:
         PacketDecodingError: If decoding packet data fails.
         PacketCreationError: If packet instantiation fails.
         PacketDecompressionError: If packet de-compression fails.
-        
     """
     
     try:

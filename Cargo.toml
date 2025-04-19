@@ -1,0 +1,16 @@
+[package]
+name = "ManagerProject"
+version = "0.2.1"
+edition = "2021"
+
+[dependencies]
+pyo3 = { version = "0.18", features = ["extension-module"] }
+tokio = { version = "1", features = ["full"] }   # если нужен асинхронный код
+rsa = "0.6"
+rand = "0.8"
+pem = "1.0"
+log = "0.4"
+env_logger = "0.10"
+
+[lib]
+crate-type = ["cdylib"]
